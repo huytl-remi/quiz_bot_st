@@ -2,4 +2,3 @@ streamlit
 openai
 PyPDF2==3.0.1
 altair
-dotenv
