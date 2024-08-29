@@ -1,0 +1,21 @@
+
+__pycache__/quiz_generation.cpython-310.pyc
+__pycache__/pdf_utils.cpython-310.pyc
+__pycache__/pdf_utils.cpython-311.pyc
+__pycache__/pdf_utils.cpython-312.pyc
+__pycache__/prompts.cpython-312.pyc
+__pycache__/quiz_generation.cpython-311.pyc
+__pycache__/quiz_generation.cpython-312.pyc
+__pycache__/save_load_utils.cpython-312.pyc
+__pycache__/api_utils.cpython-310.pyc
+__pycache__/api_utils.cpython-311.pyc
+__pycache__/api_utils.cpython-312.pyc
+__pycache__/course_generation.cpython-310.pyc
+__pycache__/course_generation.cpython-311.pyc
+__pycache__/course_generation.cpython-312.pyc
+.DS_Store
+__pycache__/display_utils.cpython-310.pyc
+__pycache__/display_utils.cpython-311.pyc
+__pycache__/display_utils.cpython-312.pyc
+saved_courses/Hola.json
+saved_courses/Holacracy: Implementing the New Management System.json
