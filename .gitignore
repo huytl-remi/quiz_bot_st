@@ -1,4 +1,3 @@
-.env
 __pycache__/quiz_generation.cpython-310.pyc
 __pycache__/pdf_utils.cpython-310.pyc
 __pycache__/pdf_utils.cpython-311.pyc
