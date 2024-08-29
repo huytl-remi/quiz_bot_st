@@ -7,67 +7,66 @@ from save_load_utils import save_course, load_course, get_saved_courses
 from prompts import COURSE_GENERATION_PROMPT
 import os
 
-client = OpenAI(api_key=st.session_state.openai_api_key)
-
-def create_assistant(vector_store_id):
-    assistant = client.beta.assistants.create(
-        name="Course Generator",
-        instructions="You are an expert in creating comprehensive course outlines based on provided documents.",
-        model="gpt-4o",
-        tools=[{"type": "file_search"}],
-        tool_resources={"file_search": {"vector_store_ids": [vector_store_id]}}
-    )
-    return assistant
-
-def create_thread():
-    return client.beta.threads.create()
-
-def create_vector_store(file):
-    vector_store = client.beta.vector_stores.create(name="Course Document")
-    file_obj = client.files.create(file=file, purpose="assistants")
-
-    file_batch = client.beta.vector_stores.file_batches.upload_and_poll(
-        vector_store_id=vector_store.id,
-        files=[file]
-    )
-
-    return vector_store.id
-
-def run_assistant(thread_id, assistant_id, user_message):
-    message = client.beta.threads.messages.create(
-        thread_id=thread_id,
-        role="user",
-        content=user_message
-    )
-
-    run = client.beta.threads.runs.create(
-        thread_id=thread_id,
-        assistant_id=assistant_id
-    )
-
-    while True:
-        run_status = client.beta.threads.runs.retrieve(thread_id=thread_id, run_id=run.id)
-        if run_status.status == 'completed':
-            break
-        time.sleep(1)
-
-    messages = client.beta.threads.messages.list(thread_id=thread_id)
-    latest_message = messages.data[0]
-
-    if latest_message.content[0].type == 'text':
-        return latest_message.content[0].text.value
-    else:
-        return "Unable to retrieve message content."
-
 def main():
     st.title("Course Outline Generator")
 
     # Check if API key is set
-    if "OPENAI_API_KEY" not in st.session_state or not st.session_state["OPENAI_API_KEY"]:
+    if "openai_api_key" not in st.session_state or not st.session_state["openai_api_key"]:
         st.warning("Please enter your OpenAI API key on the Home page to use this feature.")
         return
 
-    client = OpenAI(api_key=st.session_state["OPENAI_API_KEY"])
+    # Initialize OpenAI client
+    client = OpenAI(api_key=st.session_state["openai_api_key"])
+
+    def create_assistant(vector_store_id):
+        assistant = client.beta.assistants.create(
+            name="Course Generator",
+            instructions="You are an expert in creating comprehensive course outlines based on provided documents.",
+            model="gpt-4",
+            tools=[{"type": "file_search"}],
+            tool_resources={"file_search": {"vector_store_ids": [vector_store_id]}}
+        )
+        return assistant
+
+    def create_thread():
+        return client.beta.threads.create()
+
+    def create_vector_store(file):
+        vector_store = client.beta.vector_stores.create(name="Course Document")
+        file_obj = client.files.create(file=file, purpose="assistants")
+
+        file_batch = client.beta.vector_stores.file_batches.upload_and_poll(
+            vector_store_id=vector_store.id,
+            files=[file]
+        )
+
+        return vector_store.id
+
+    def run_assistant(thread_id, assistant_id, user_message):
+        message = client.beta.threads.messages.create(
+            thread_id=thread_id,
+            role="user",
+            content=user_message
+        )
+
+        run = client.beta.threads.runs.create(
+            thread_id=thread_id,
+            assistant_id=assistant_id
+        )
+
+        while True:
+            run_status = client.beta.threads.runs.retrieve(thread_id=thread_id, run_id=run.id)
+            if run_status.status == 'completed':
+                break
+            time.sleep(1)
+
+        messages = client.beta.threads.messages.list(thread_id=thread_id)
+        latest_message = messages.data[0]
+
+        if latest_message.content[0].type == 'text':
+            return latest_message.content[0].text.value
+        else:
+            return "Unable to retrieve message content."
 
     # Initialize session state
     if 'course' not in st.session_state:
