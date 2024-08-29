@@ -7,7 +7,7 @@ from save_load_utils import load_course, get_saved_courses, update_course_with_q
 from prompts import QUIZ_GENERATION_PROMPT
 import os
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(api_key=st.session_state.openai_api_key)
 
 def run_assistant(thread_id, assistant_id, user_message):
     message = client.beta.threads.messages.create(

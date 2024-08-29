@@ -1,33 +1,36 @@
 import streamlit as st
-from dotenv import load_dotenv
 import os
 
-# Load environment variables
-load_dotenv()
-
-# Check if API key is set
-if not os.getenv("OPENAI_API_KEY"):
-    st.error("OpenAI API key is not set. Please check your .env file.")
-    st.stop()
-
-st.set_page_config(layout="wide", page_title="Course and Quiz Generator", page_icon="📚")
-
 def main():
-    st.title("📚 Course and Quiz Generator")
+    st.set_page_config(layout="wide", page_title="Course and Quiz Generator")
 
-    st.markdown("""
-    Welcome to the Course and Quiz Generator. This tool helps you create comprehensive course outlines and quizzes from your documents.
+    # Check if API key is in session state
+    if 'openai_api_key' not in st.session_state:
+        st.title("Welcome to the Course and Quiz Generator")
+        st.write("Please enter your OpenAI API key to get started.")
+        api_key = st.text_input("OpenAI API Key", type="password")
+        if st.button("Submit"):
+            if api_key:
+                st.session_state.openai_api_key = api_key
+                os.environ["OPENAI_API_KEY"] = api_key
+                st.success("API key set successfully!")
+                st.rerun()
+            else:
+                st.error("Please enter a valid API key.")
+    else:
+        st.title("Course and Quiz Generator")
+        st.write("Welcome to the Course and Quiz Generator. Use the sidebar to navigate between generating course outlines and quizzes.")
 
-    ### How it works:
-    1. **Upload** your document on the 'Course Outline' page
-    2. **Generate** a course outline based on the document
-    3. **Create** quizzes for specific modules on the 'Quiz Generation' page
+        st.write("How to use this app:")
+        st.write("1. Go to 'Course Outline' to upload a document and generate a course outline.")
+        st.write("2. After generating a course outline, you can save it for later use.")
+        st.write("3. Go to 'Quiz Generation' to create quizzes based on the generated course outline.")
+        st.write("4. You can load previously saved course outlines to generate quizzes without regenerating the outline.")
 
-    Get started by selecting a page from the sidebar!
-    """)
-
-    st.sidebar.markdown("## Navigation")
-    st.sidebar.info("Select a page above to begin.")
+        # Add a button to clear the API key if needed
+        if st.button("Clear API Key"):
+            del st.session_state.openai_api_key
+            st.success("API key cleared. Please refresh the page.")
 
 if __name__ == "__main__":
     main()

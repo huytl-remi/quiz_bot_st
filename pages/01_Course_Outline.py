@@ -7,13 +7,13 @@ from save_load_utils import save_course, load_course, get_saved_courses
 from prompts import COURSE_GENERATION_PROMPT
 import os
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(api_key=st.session_state.openai_api_key)
 
 def create_assistant(vector_store_id):
     assistant = client.beta.assistants.create(
         name="Course Generator",
         instructions="You are an expert in creating comprehensive course outlines based on provided documents.",
-        model="gpt-4-1106-preview",
+        model="gpt-4o",
         tools=[{"type": "file_search"}],
         tool_resources={"file_search": {"vector_store_ids": [vector_store_id]}}
     )
@@ -61,6 +61,13 @@ def run_assistant(thread_id, assistant_id, user_message):
 
 def main():
     st.title("Course Outline Generator")
+
+    # Check if API key is set
+    if "OPENAI_API_KEY" not in st.session_state or not st.session_state["OPENAI_API_KEY"]:
+        st.warning("Please enter your OpenAI API key on the Home page to use this feature.")
+        return
+
+    client = OpenAI(api_key=st.session_state["OPENAI_API_KEY"])
 
     # Initialize session state
     if 'course' not in st.session_state:
