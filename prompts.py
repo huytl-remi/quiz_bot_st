@@ -14,6 +14,7 @@ Create a comprehensive micro-training course outline based on the provided docum
       "key_points": [
         {{
           "point": "A detailed, learnable fact or concept",
+          "explanation": "A brief explanation or elaboration of the point",
           "reference": "Exact quote of the beginning phrase of the respective material"
         }}
       ]
@@ -33,13 +34,12 @@ Create a comprehensive micro-training course outline based on the provided docum
    - Ensure objectives clearly state what learners should be able to do or understand after completing the course.
    - Use action verbs and make objectives as concrete and measurable as possible.
 4. Modules:
-   - Identify distinct modules that thoroughly cover the main topics of the document.
-   - Don't limit yourself to a specific number of modules; include as many as necessary to cover all important content.
-   - Ensure each module has a clear, descriptive title.
+   - Create as many modules as necessary to cover all important content in the document. Do not limit to a fixed number.
+   - Ensure each module has a clear, descriptive title that reflects its content.
 5. Key Points:
-   - For each module, provide detailed and crucial information as key points.
+   - For each module, provide 3-5 detailed and crucial key points.
    - Each key point should be a specific, learnable fact or concept.
-   - Don't restrict the number of key points; include all important concepts that learners should understand.
+   - Include a brief explanation or elaboration for each key point to enhance understanding.
    - Ensure each key point has a reference field with an exact quote of the beginning phrase of the respective material in the source document.
 6. Content Depth and Consistency:
    - Maintain consistent depth and detail across all modules.

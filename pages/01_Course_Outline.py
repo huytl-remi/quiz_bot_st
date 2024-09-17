@@ -10,6 +10,10 @@ import os
 def main():
     st.title("Course Outline Generator")
 
+    # Initialize session state
+    if 'course' not in st.session_state:
+        st.session_state.course = None
+
     # Check if API key is set
     if "openai_api_key" not in st.session_state or not st.session_state["openai_api_key"]:
         st.warning("Please enter your OpenAI API key on the Home page to use this feature.")
@@ -22,7 +26,7 @@ def main():
         assistant = client.beta.assistants.create(
             name="Course Generator",
             instructions="You are an expert in creating comprehensive course outlines based on provided documents.",
-            model="gpt-4o",
+            model="gpt-4-0125-preview",
             tools=[{"type": "file_search"}],
             tool_resources={"file_search": {"vector_store_ids": [vector_store_id]}}
         )
@@ -68,14 +72,19 @@ def main():
         else:
             return "Unable to retrieve message content."
 
-    # Initialize session state
-    if 'course' not in st.session_state:
-        st.session_state.course = None
-
     # File upload
     uploaded_file = st.file_uploader("Upload your PDF document", type="pdf")
 
     if uploaded_file is not None:
+        # Clear previous data when a new file is uploaded
+        if 'vector_store_id' in st.session_state:
+            del st.session_state.vector_store_id
+        if 'assistant' in st.session_state:
+            del st.session_state.assistant
+        if 'thread' in st.session_state:
+            del st.session_state.thread
+        st.session_state.course = None  # Reset the course when a new file is uploaded
+
         st.success("PDF successfully uploaded.")
 
         if 'vector_store_id' not in st.session_state:

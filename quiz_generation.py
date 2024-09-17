@@ -6,11 +6,18 @@ def generate_quiz(response, num_questions):
         # Log the raw response for debugging
         # st.write("Raw AI response for quiz:", response)
 
+        # Clean up the response string
+        response = response.strip()
+
         # Attempt to find and extract JSON from the response
         json_start = response.find('{')
         json_end = response.rfind('}') + 1
         if json_start != -1 and json_end != -1:
             json_str = response[json_start:json_end]
+
+            # Remove any leading/trailing whitespace and newlines
+            json_str = json_str.strip()
+
             quiz_data = json.loads(json_str)
 
             # Validate the quiz data structure
@@ -29,14 +36,14 @@ def generate_quiz(response, num_questions):
                         {"text": "Option D", "is_correct": True}
                     ],
                     "explanation": "Placeholder explanation",
-                    # "real_world_application": "Placeholder application"
                 })
 
             return quiz_data
         else:
             raise ValueError("No valid JSON found in the response")
     except json.JSONDecodeError as e:
-        st.error(f"Failed to parse JSON for quiz: {str(e)}")
+        st.error(f"Failed to parse JSON for quiz. Error: {str(e)}")
+        st.write("Problematic JSON string:", json_str)
     except ValueError as e:
         st.error(f"Invalid quiz data structure: {str(e)}")
     except Exception as e:

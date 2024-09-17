@@ -22,6 +22,7 @@ def display_course(course):
         with st.expander(f"Module {i}: {module.get('module_title', 'Untitled Module')}"):
             for point in module.get('key_points', []):
                 st.markdown(f"- **{point.get('point', 'No point specified')}**")
+                st.markdown(f"{point.get('explanation', 'No explanation provided')}")
                 st.caption(f"Reference: '{point.get('reference', 'No reference provided')}'")
 
 def display_interactive_quiz(quiz, module_number):
@@ -31,9 +32,11 @@ def display_interactive_quiz(quiz, module_number):
 
     st.subheader(f"Quiz for Module {module_number}")
 
-    # Initialize session state for user answers if not already present
+    # Initialize session state for user answers and question status if not already present
     if 'user_answers' not in st.session_state:
         st.session_state.user_answers = {}
+    if 'question_status' not in st.session_state:
+        st.session_state.question_status = {}
 
     for j, question in enumerate(quiz.get('quizzes', []), 1):
         with st.expander(f"Question {j}", expanded=True):
@@ -59,4 +62,9 @@ def display_interactive_quiz(quiz, module_number):
                 st.write("Explanation:")
                 st.info(question.get('explanation', 'No explanation provided'))
 
-            st.caption(f"Reference: '{question.get('reference', {}).get('text', 'No reference provided')}'")
+                # Mark the question as answered
+                st.session_state.question_status[question_key] = True
+
+            # Only show the reference if the question has been answered
+            if st.session_state.question_status.get(question_key, False):
+                st.caption(f"Reference: '{question.get('reference', {}).get('text', 'No reference provided')}'")

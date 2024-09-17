@@ -45,22 +45,22 @@ def main():
             return "Unable to retrieve message content."
 
     # Load saved course
-    saved_courses = get_saved_courses()
-    if saved_courses:
-        selected_course = st.selectbox("Select a saved course outline", saved_courses)
-        if st.button("Load Course"):
-            loaded_course = load_course(selected_course)
-            if loaded_course:
-                st.session_state.course = loaded_course
-                st.success("Course outline loaded successfully.")
-            else:
-                st.error("Failed to load the selected course outline.")
-    else:
-        st.warning("No saved course outlines found. Please generate and save a course outline first.")
+    # saved_courses = get_saved_courses()
+    # if saved_courses:
+    #     selected_course = st.selectbox("Select a saved course outline", saved_courses)
+    #     if st.button("Load Course"):
+    #         loaded_course = load_course(selected_course)
+    #         if loaded_course:
+    #             st.session_state.course = loaded_course
+    #             st.success("Course outline loaded successfully.")
+    #         else:
+    #             st.error("Failed to load the selected course outline.")
+    # else:
+    #     st.warning("No saved course outlines found. Please generate and save a course outline first.")
 
-    if 'course' not in st.session_state or st.session_state.course is None:
-        st.warning("No course loaded. Please generate or load a course outline first.")
-        st.stop()
+    # if 'course' not in st.session_state or st.session_state.course is None:
+    #     st.warning("No course loaded. Please generate or load a course outline first.")
+    #     st.stop()
 
     st.subheader(f"Current Course: {st.session_state.course.get('course_title', 'Untitled Course')}")
 
@@ -81,17 +81,28 @@ def main():
             st.error("Assistant or thread not initialized. Please go to the Course Outline page first.")
         else:
             with st.spinner(f"Generating {num_quizzes} quiz questions for {selected_module}..."):
-                quiz_prompt = QUIZ_GENERATION_PROMPT.format(module_title=selected_module, num_questions=num_quizzes)
-                quiz_prompt += f"\n\nPlease generate {num_quizzes} quiz questions based on the '{selected_module}' module."
-                quiz_response = run_assistant(st.session_state.thread.id, st.session_state.assistant.id, quiz_prompt)
-                quiz = generate_quiz(quiz_response, num_quizzes)
+                try:
+                    quiz_prompt = QUIZ_GENERATION_PROMPT.format(
+                        module_title=selected_module,
+                        num_questions=num_quizzes
+                    )
+                    quiz_prompt += f"\n\nPlease generate {num_quizzes} quiz questions based on the '{selected_module}' module."
+                    quiz_response = run_assistant(st.session_state.thread.id, st.session_state.assistant.id, quiz_prompt)
+                    quiz = generate_quiz(quiz_response, num_quizzes)
 
-                if quiz:
-                    st.session_state.course = update_course_with_quiz(st.session_state.course, selected_module_index, quiz)
-                    save_course(st.session_state.course, st.session_state.course['course_title'])
-                    st.success("Quiz generated and saved successfully!")
-                else:
-                    st.error("Failed to generate quiz. Please try again.")
+                    if quiz:
+                        st.session_state.course = update_course_with_quiz(st.session_state.course, selected_module_index, quiz)
+                        save_course(st.session_state.course, st.session_state.course['course_title'])
+                        st.success("Quiz generated and saved successfully!")
+                    else:
+                        st.error("Failed to generate quiz. Please try again.")
+                except KeyError as e:
+                    st.error(f"Error in quiz generation: {str(e)}")
+                    st.write("Debug info:")
+                    st.write(f"Selected module: {selected_module}")
+                    st.write(f"Number of questions: {num_quizzes}")
+                except Exception as e:
+                    st.error(f"An unexpected error occurred: {str(e)}")
 
     # Display the quiz if it exists for the selected module
     if 'quiz' in st.session_state.course['modules'][selected_module_index]:
